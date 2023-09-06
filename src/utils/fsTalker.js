@@ -34,18 +34,30 @@ const writeNewTalker = async (newTalker) => {
   }
 };
 
-const updateTalkerData = async (id, updatedTalker) => {
-  const oldTalkerData = await getAllTalkers();
-  const updatedTalkerData = { id, ...updatedTalker };
-  const updatedTalkersData = oldTalkerData.reduce((talkersList, currentTalker) => {
-    if (currentTalker.id === updateTalkerData.id) return [...talkersList, updatedTalkerData];
-    return [...talkersList, currentTalker];
-  }, []);
+// const updateTalkerData = async (id, updatedTalker) => {
+//   const oldTalkerData = await getAllTalkers();
+//   const updatedTalkerData = { id, ...updatedTalker };
+//   const updatedTalkersData = oldTalkerData.reduce((talkersList, currentTalker) => {
+//     if (currentTalker.id === updateTalkerData.id) return [...talkersList, updatedTalkerData];
+//     return [...talkersList, currentTalker];
+//   }, []);
   
-  const updatedData = JSON.stringify(updatedTalkersData);
+//   const updatedData = JSON.stringify(updatedTalkersData);
 
+//   try {
+//     await fs.writeFile(path.resolve(__dirname, '..', 'talker.json'), updatedData, 'utf-8');
+//   } catch (error) {
+//     console.error(`Error writing file: ${error.message}`);
+//   }
+// };
+
+const deleteTalker = async (id) => {
+  const oldTalkerData = await readTalkerData();
+  const updatedTalkerData = oldTalkerData.filter((currentTalker) => currentTalker.id !== id);
+
+  const updatedTalkersList = JSON.stringify(updatedTalkerData);
   try {
-    await fs.writeFile(path.resolve(__dirname, '..', 'talker.json'), updatedData, 'utf-8');
+    await fs.writeFile(path.resolve(__dirname, '..', 'talker.json'), updatedTalkersList, 'utf-8'); 
   } catch (error) {
     console.error(`Error writing file: ${error.message}`);
   }
@@ -55,5 +67,6 @@ module.exports = {
   getAllTalkers,
   getTalkersById,
   writeNewTalker,
-  updateTalkerData,
+  // updateTalkerData,
+  deleteTalker,
 };

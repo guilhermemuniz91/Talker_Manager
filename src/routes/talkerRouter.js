@@ -6,7 +6,8 @@ const {
   getAllTalkers, 
   getTalkersById,
   writeNewTalker,
-  updateTalkerData,
+  deleteTalker,
+  // updateTalkerData,
 } = require('../utils/fsTalker');
 
 const { 
@@ -62,34 +63,40 @@ router.post(
   },
 );
 
-router.put(
-  '/:id',
-  tokenValidation,
-  nameValidation,
-  ageValidation,
-  talkValidation,
-  watchedAtValidation,
-  rateValidation,
-  rateValueValidation, async (req, res) => {
-    const { id } = req.params;
-    const { name, age, talk } = req.body;
-    const { watchedAt, rate } = talk;
-    try {
-      const updatedTalker = {
-        name,
-        age,
-        id: Number(id),
-        talk: {
-          watchedAt,
-          rate,
-        },
-      };
-      await updateTalkerData(Number(id), updatedTalker);
-      return res.status(200).json(updatedTalker);
-    } catch (error) {
-      return res.status(500).json({ message: error.message });
-    }
-  },
-);
+// router.put(
+//   '/:id',
+//   tokenValidation,
+//   nameValidation,
+//   ageValidation,
+//   talkValidation,
+//   watchedAtValidation,
+//   rateValidation,
+//   rateValueValidation, async (req, res) => {
+//     const { id } = req.params;
+//     const { name, age, talk } = req.body;
+//     const { watchedAt, rate } = talk;
+//     try {
+//       const updatedTalker = {
+//         name,
+//         age,
+//         id: Number(id),
+//         talk: {
+//           watchedAt,
+//           rate,
+//         },
+//       };
+//       await updateTalkerData(Number(id), updatedTalker);
+//       return res.status(200).json(updatedTalker);
+//     } catch (error) {
+//       return res.status(500).json({ message: error.message });
+//     }
+//   },
+// );
+
+router.delete('/:id', tokenValidation, async (req, res) => {
+  const { id } = req.params;
+  await deleteTalker(Number(id));
+  return res.status(204).end();
+});
 
 module.exports = router;
