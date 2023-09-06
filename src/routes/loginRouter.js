@@ -4,7 +4,7 @@ const router = express.Router();
 
 const getToken = require('../utils/generateToken');
 
-const { emailValidation, passwordValidation } = require('../validations/loginValidation');
+const { emailValidation, passwordValidation } = require('../middlewares/loginValidation');
 
 router.post('/', emailValidation, passwordValidation, (req, res) => {
   try {
