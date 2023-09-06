@@ -27,9 +27,27 @@ const writeNewTalker = async (newTalker) => {
     const oldTalkerData = await readTalkerData();
     oldTalkerData.push(newTalker);
     const updatedTalkerData = JSON.stringify(oldTalkerData);
+
     await fs.writeFile(path.resolve(__dirname, '..', 'talker.json'), updatedTalkerData, 'utf-8');
   } catch (err) {
-    console.error(`Error reading file: ${err.message}`);
+    console.error(`Error writing file: ${err.message}`);
+  }
+};
+
+const updateTalkerData = async (id, updatedTalker) => {
+  const oldTalkerData = await getAllTalkers();
+  const updatedTalkerData = { id, ...updatedTalker };
+  const updatedTalkersData = oldTalkerData.reduce((talkersList, currentTalker) => {
+    if (currentTalker.id === updateTalkerData.id) return [...talkersList, updatedTalkerData];
+    return [...talkersList, currentTalker];
+  }, []);
+  
+  const updatedData = JSON.stringify(updatedTalkersData);
+
+  try {
+    await fs.writeFile(path.resolve(__dirname, '..', 'talker.json'), updatedData, 'utf-8');
+  } catch (error) {
+    console.error(`Error writing file: ${error.message}`);
   }
 };
 
@@ -37,4 +55,5 @@ module.exports = {
   getAllTalkers,
   getTalkersById,
   writeNewTalker,
+  updateTalkerData,
 };

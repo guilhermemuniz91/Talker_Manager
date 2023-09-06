@@ -6,6 +6,7 @@ const {
   getAllTalkers, 
   getTalkersById,
   writeNewTalker,
+  updateTalkerData,
 } = require('../utils/fsTalker');
 
 const { 
@@ -43,11 +44,11 @@ router.post(
     const { name, age, talk } = req.body;
     const { watchedAt, rate } = talk;
     try {
-      const existingData = await getAllTalkers();
+      const actualTalkerData = await getAllTalkers();
       const newTalker = {
         name,
         age,
-        id: existingData.length + 1,
+        id: actualTalkerData.length + 1,
         talk: {
           watchedAt,
           rate,
@@ -55,6 +56,36 @@ router.post(
       };
       await writeNewTalker(newTalker);
       return res.status(201).json(newTalker);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  },
+);
+
+router.put(
+  '/:id',
+  tokenValidation,
+  nameValidation,
+  ageValidation,
+  talkValidation,
+  watchedAtValidation,
+  rateValidation,
+  rateValueValidation, async (req, res) => {
+    const { id } = req.params;
+    const { name, age, talk } = req.body;
+    const { watchedAt, rate } = talk;
+    try {
+      const updatedTalker = {
+        name,
+        age,
+        id: Number(id),
+        talk: {
+          watchedAt,
+          rate,
+        },
+      };
+      await updateTalkerData(Number(id), updatedTalker);
+      return res.status(200).json(updatedTalker);
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
