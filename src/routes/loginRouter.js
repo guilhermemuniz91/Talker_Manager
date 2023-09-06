@@ -4,7 +4,9 @@ const router = express.Router();
 
 const getToken = require('../utils/generateToken');
 
-router.post('/', (req, res) => {
+const { emailValidation, passwordValidation } = require('../validations/loginValidation');
+
+router.post('/', emailValidation, passwordValidation, (req, res) => {
   try {
     return res.status(200).json({ token: getToken() });
   } catch (error) {
