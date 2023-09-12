@@ -34,22 +34,22 @@ const writeNewTalker = async (newTalker) => {
   }
 };
 
-// const updateTalkerData = async (id, updatedTalker) => {
-//   const oldTalkerData = await getAllTalkers();
-//   const updatedTalkerData = { id, ...updatedTalker };
-//   const updatedTalkersData = oldTalkerData.reduce((talkersList, currentTalker) => {
-//     if (currentTalker.id === updateTalkerData.id) return [...talkersList, updatedTalkerData];
-//     return [...talkersList, currentTalker];
-//   }, []);
+const updateTalkerData = async (id, updatedTalker) => {
+  const oldTalkerData = await readTalkerData();
+  const updatedTalkerData = { id, ...updatedTalker };
+  const updatedTalkersData = oldTalkerData.reduce((talkersList, currentTalker) => {
+    if (currentTalker.id === updateTalkerData.id) return [...talkersList, updatedTalkerData];
+    return [...talkersList, currentTalker];
+  }, []);
   
-//   const updatedData = JSON.stringify(updatedTalkersData);
-
-//   try {
-//     await fs.writeFile(path.resolve(__dirname, '..', 'talker.json'), updatedData, 'utf-8');
-//   } catch (error) {
-//     console.error(`Error writing file: ${error.message}`);
-//   }
-// };
+  const updatedData = JSON.stringify(updatedTalkersData);
+  try {
+    await fs.writeFile(path.resolve(__dirname, '..', 'talker.json'), updatedData, 'utf-8');
+    console.log(`Atualizou o talker com o id ${id}`);
+  } catch (error) {
+    console.error(`Error writing file: ${error.message}`);
+  }
+};
 
 const deleteTalker = async (id) => {
   const oldTalkerData = await readTalkerData();
@@ -63,10 +63,17 @@ const deleteTalker = async (id) => {
   }
 };
 
+const searchTalkers = async (searchTerm) => {
+  const talkersData = await getAllTalkers();
+  const searchedTalkers = talkersData.filter((element) => element.name.includes(searchTerm));
+  return searchedTalkers;
+};
+
 module.exports = {
   getAllTalkers,
   getTalkersById,
   writeNewTalker,
-  // updateTalkerData,
+  updateTalkerData,
   deleteTalker,
+  searchTalkers,
 };

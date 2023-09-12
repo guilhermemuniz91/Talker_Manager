@@ -6,8 +6,9 @@ const {
   getAllTalkers, 
   getTalkersById,
   writeNewTalker,
+  updateTalkerData,
   deleteTalker,
-  // updateTalkerData,
+  searchTalkers,
 } = require('../utils/fsTalker');
 
 const { 
@@ -19,6 +20,16 @@ const {
   rateValidation,
   rateValueValidation,
 } = require('../middlewares/talkerValidation');
+
+router.get('/search', tokenValidation, async (req, res) => {
+  const { q } = req.query;
+  if (!q || q === '') {
+    const talkerData = await getAllTalkers();
+    return res.status(200).json(talkerData);
+  }
+  const searchedTalkers = await searchTalkers(q);
+  return res.status(200).json(searchedTalkers);
+});
  
 router.get('/', async (req, res) => {
   const talkerData = await getAllTalkers();  
@@ -63,35 +74,35 @@ router.post(
   },
 );
 
-// router.put(
-//   '/:id',
-//   tokenValidation,
-//   nameValidation,
-//   ageValidation,
-//   talkValidation,
-//   watchedAtValidation,
-//   rateValidation,
-//   rateValueValidation, async (req, res) => {
-//     const { id } = req.params;
-//     const { name, age, talk } = req.body;
-//     const { watchedAt, rate } = talk;
-//     try {
-//       const updatedTalker = {
-//         name,
-//         age,
-//         id: Number(id),
-//         talk: {
-//           watchedAt,
-//           rate,
-//         },
-//       };
-//       await updateTalkerData(Number(id), updatedTalker);
-//       return res.status(200).json(updatedTalker);
-//     } catch (error) {
-//       return res.status(500).json({ message: error.message });
-//     }
-//   },
-// );
+router.put(
+  '/:id',
+  tokenValidation,
+  nameValidation,
+  ageValidation,
+  talkValidation,
+  watchedAtValidation,
+  rateValidation,
+  rateValueValidation, 
+  async (req, res) => {
+    const { id } = req.params;
+    const { name, age, talk } = req.body;
+    const { watchedAt, rate } = talk;
+    try {
+      const currentData = await getAllTalkers();
+      const doesIdExist = currentData.some((element) => element.id === Number(id));
+      if (!doesIdExist) {
+        return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+      }
+      const updatedTalker = {
+        name, age, id: Number(id), talk: { watchedAt, rate },
+      };
+      await updateTalkerData(Number(id), updatedTalker);
+      return res.status(200).json(updatedTalker);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  },
+);
 
 router.delete('/:id', tokenValidation, async (req, res) => {
   const { id } = req.params;
